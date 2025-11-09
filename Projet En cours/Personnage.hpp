@@ -1,9 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <string>
-
-using namespace sf;
-using namespace std;
 
 namespace game
 {
@@ -14,7 +10,7 @@ namespace game
         virtual ~Personnage() = default;
 
         virtual void update(float deltaTime) = 0;
-        virtual void draw(RenderWindow& window) = 0;
+        virtual void draw(sf::RenderWindow& window) = 0;
 
         float getVie() const;
         void setVie(float vie);
@@ -29,7 +25,7 @@ namespace game
         float vie_;
         float degats_;
         float vitesse_;
-        Texture texture_;
-        Sprite sprite_;
+        sf::Texture texture_;
+        sf::Sprite sprite_;  // plus de pointeur ici 
     };
 }

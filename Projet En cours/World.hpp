@@ -2,9 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include "Joueur.hpp"
-
-using namespace sf;
-using namespace std;
+#include "Formation.hpp"
 
 namespace game
 {
@@ -15,8 +13,9 @@ namespace game
         void run();
 
     private:
-        RenderWindow window_;
-        unique_ptr<Joueur> joueur_;
+        sf::RenderWindow window_;
+        std::unique_ptr<Joueur> joueur_;
+        std::unique_ptr<Formation> formation_;
 
         void processEvents();
         void update(float deltaTime);

@@ -1,8 +1,5 @@
 #include "Personnage.hpp"
 
-using namespace sf;
-using namespace std;
-
 namespace game
 {
     Personnage::Personnage(float vie, float degats, float vitesse)
@@ -10,8 +7,9 @@ namespace game
         degats_(degats),
         vitesse_(vitesse),
         texture_(),
-        sprite_(texture_) //  initialise explicitement le sprite avec la texture
+        sprite_(texture_)
     {
+        // le sprite sera configuré dans les classes filles
     }
 
     float Personnage::getVie() const { return vie_; }

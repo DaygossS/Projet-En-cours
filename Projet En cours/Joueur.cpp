@@ -8,7 +8,7 @@ using namespace std;
 namespace game
 {
     Joueur::Joueur()
-        : Personnage(100.f, 10.f, 300.f)
+        : Personnage(100.f, 10.f, 150.f)
     {
         if (!texture_.loadFromFile("assets/player.png"))
         {
@@ -16,6 +16,7 @@ namespace game
         }
 
         sprite_ = Sprite(texture_);
+        sprite_.setScale(Vector2f(0.07f, 0.07f));
 
         // Calcule la taille du sprite
         auto rect = sprite_.getTextureRect();
@@ -23,7 +24,7 @@ namespace game
             rect.position.y * sprite_.getScale().y);
 
         // Position centrée horizontalement
-        sprite_.setPosition(Vector2f{ 0.f - spriteSize.x / 20.f, 50.f });
+        sprite_.setPosition(Vector2f{ 400.f - spriteSize.x / 20.f, 550.f });
     }
 
 
@@ -46,6 +47,21 @@ namespace game
     void Joueur::update(float deltaTime)
     {
         handleInput(deltaTime);
+
+        const float windowWidth = 800.f;
+        const float windowHeight = 600.f;
+
+        auto rect = sprite_.getTextureRect();
+        float spriteWidth = static_cast<float>(rect.size.x) * sprite_.getScale().x;
+        float spriteHeight = static_cast<float>(rect.size.y) * sprite_.getScale().y;
+
+        Vector2f pos = sprite_.getPosition();
+
+        // Empêche le joueur de sortir de la fenêtre
+        pos.x = std::clamp(pos.x, 0.f, windowWidth - spriteWidth);
+        pos.y = std::clamp(pos.y, 0.f, windowHeight - spriteHeight);
+
+        sprite_.setPosition(pos);
     }
 
     void Joueur::draw(RenderWindow& window)
