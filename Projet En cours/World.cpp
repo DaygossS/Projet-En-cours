@@ -6,7 +6,8 @@ using namespace std;
 namespace game
 {
     World::World()
-        : window_(RenderWindow(VideoMode({ 800, 600 }), "Space Invaders - SFML 3.0.2"))
+        : window_(RenderWindow(VideoMode({ 800, 600 }), "Space Invaders - SFML 3.0.2")),
+        joueur_(make_unique<Joueur>())
     {
         window_.setFramerateLimit(60);
     }
@@ -18,7 +19,6 @@ namespace game
         while (window_.isOpen())
         {
             processEvents();
-
             float deltaTime = clock.restart().asSeconds();
             update(deltaTime);
             render();
@@ -35,14 +35,15 @@ namespace game
         }
     }
 
-    void World::update(float)
+    void World::update(float deltaTime)
     {
-        // Rien pour l'instant
+        joueur_->update(deltaTime);
     }
 
     void World::render()
     {
         window_.clear(Color::Black);
+        joueur_->draw(window_);
         window_.display();
     }
 }
