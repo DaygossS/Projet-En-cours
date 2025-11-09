@@ -1,35 +1,36 @@
-#pragma once
+#ifndef GAME_PERSONNAGE_HPP
+#define GAME_PERSONNAGE_HPP
+
 #include <SFML/Graphics.hpp>
-#include <string>
 
-using namespace sf;
-using namespace std;
+namespace game {
 
-namespace game
-{
-    class Personnage
-    {
+    class Personnage {
     public:
-        Personnage(float vie, float degats, float vitesse);
-        virtual ~Personnage() = default;
+        Personnage(int vie = 100, int degats = 10, float vitesse = 100.0f) noexcept;
+        virtual ~Personnage() noexcept = default;
 
         virtual void update(float deltaTime) = 0;
-        virtual void draw(RenderWindow& window) = 0;
+        virtual void draw(sf::RenderTarget& target) const = 0;
 
-        float getVie() const;
-        void setVie(float vie);
+        virtual void subirDegats(int degats) noexcept;
+        virtual bool estVivant() const noexcept;
 
-        float getDegats() const;
-        void setDegats(float degats);
+        int getVie() const noexcept;
+        void setVie(int vie) noexcept;
 
-        float getVitesse() const;
-        void setVitesse(float vitesse);
+        int getDegats() const noexcept;
+        void setDegats(int degats) noexcept;
+
+        float getVitesse() const noexcept;
+        void setVitesse(float vitesse) noexcept;
 
     protected:
-        float vie_;
-        float degats_;
+        int vie_;
+        int degats_;
         float vitesse_;
-        Texture texture_;
-        Sprite sprite_;
     };
-}
+
+} // namespace game
+
+#endif
