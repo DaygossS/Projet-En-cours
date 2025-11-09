@@ -1,29 +1,25 @@
 #include "Personnage.hpp"
-#include <algorithm>
 
 using namespace sf;
 using namespace std;
 
-namespace game {
-
-    Personnage::Personnage(int vie, int degats, float vitesse) noexcept
-        : vie_(vie), degats_(degats), vitesse_(vitesse) {
+namespace game
+{
+    Personnage::Personnage(float vie, float degats, float vitesse)
+        : vie_(vie),
+        degats_(degats),
+        vitesse_(vitesse),
+        texture_(),
+        sprite_(texture_) //  initialise explicitement le sprite avec la texture
+    {
     }
 
-    void Personnage::subirDegats(int degats) noexcept {
-        if (degats <= 0) return;
-        vie_ = max(0, vie_ - degats);
-    }
+    float Personnage::getVie() const { return vie_; }
+    void Personnage::setVie(float vie) { vie_ = vie; }
 
-    bool Personnage::estVivant() const noexcept { return vie_ > 0; }
+    float Personnage::getDegats() const { return degats_; }
+    void Personnage::setDegats(float degats) { degats_ = degats; }
 
-    int Personnage::getVie() const noexcept { return vie_; }
-    void Personnage::setVie(int vie) noexcept { vie_ = max(0, vie); }
-
-    int Personnage::getDegats() const noexcept { return degats_; }
-    void Personnage::setDegats(int degats) noexcept { degats_ = degats; }
-
-    float Personnage::getVitesse() const noexcept { return vitesse_; }
-    void Personnage::setVitesse(float vitesse) noexcept { vitesse_ = vitesse; }
-
+    float Personnage::getVitesse() const { return vitesse_; }
+    void Personnage::setVitesse(float vitesse) { vitesse_ = vitesse; }
 }
