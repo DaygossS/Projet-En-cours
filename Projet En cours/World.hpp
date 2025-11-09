@@ -1,27 +1,25 @@
-#ifndef GAME_WORLD_HPP
-#define GAME_WORLD_HPP
-
+#pragma once
 #include <SFML/Graphics.hpp>
 #include <memory>
-#include "Formation.hpp"
 #include "Joueur.hpp"
 
-namespace game {
+using namespace sf;
+using namespace std;
 
-    class World {
+namespace game
+{
+    class World
+    {
     public:
         World();
         void run();
 
     private:
+        RenderWindow window_;
+        unique_ptr<Joueur> joueur_;
+
+        void processEvents();
         void update(float deltaTime);
         void render();
-
-        sf::RenderWindow window_;
-        std::unique_ptr<Joueur> joueur_;
-        unique_ptr<Formation> formation_;
     };
-
-} // namespace game
-
-#endif // GAME_WORLD_HPP
+}
