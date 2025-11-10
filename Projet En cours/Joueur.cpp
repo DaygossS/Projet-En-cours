@@ -42,11 +42,39 @@ namespace game
             movement.y += vitesse_ * deltaTime;
 
         sprite_.move(movement);
+
+       // --- Tir automatique double-canon ---
+static sf::Clock tirClock; // contrôle la cadence
+static bool leftSide = true; // alterne les côtés du vaisseau
+
+if (tirClock.getElapsedTime().asSeconds() > 0.25f) // cadence de tir (ajuste selon ton goût)
+{
+    auto rect = sprite_.getTextureRect();
+    sf::Vector2f spriteSize(
+        rect.size.x * sprite_.getScale().x,
+        rect.size.y * sprite_.getScale().y
+    );
+
+    // Position du tir : gauche ou droite du vaisseau
+    sf::Vector2f spawnPos(
+        sprite_.getPosition().x + (leftSide ? 8.f : spriteSize.x - 12.f),
+        sprite_.getPosition().y - 8.f
+    );
+
+    arme_.tirer(spawnPos);
+
+    leftSide = !leftSide;      // alterne pour le tir suivant
+    tirClock.restart();        // remet le compteur à zéro
+}
+
+
     }
+
 
     void Joueur::update(float deltaTime)
     {
         handleInput(deltaTime);
+        arme_.update(deltaTime);
 
         const float windowWidth = 800.f;
         const float windowHeight = 600.f;
@@ -67,5 +95,6 @@ namespace game
     void Joueur::draw(RenderWindow& window)
     {
         window.draw(sprite_);
+        arme_.draw(window);
     }
 }

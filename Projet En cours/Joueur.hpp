@@ -1,5 +1,6 @@
 #pragma once
 #include "Personnage.hpp"
+#include "Arme.hpp"
 
 using namespace sf;
 using namespace std;
@@ -14,6 +15,10 @@ namespace game
         void draw(RenderWindow& window) override;
 
     private:
+
         void handleInput(float deltaTime);
+        Arme arme_{ true }; // tirs rouges vers le haut
+
+
     };
 }

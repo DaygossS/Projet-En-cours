@@ -13,12 +13,12 @@ namespace game
         void run();
 
     private:
-        sf::RenderWindow window_;
-        std::unique_ptr<Joueur> joueur_;
-        std::unique_ptr<Formation> formation_;
-
         void processEvents();
         void update(float deltaTime);
         void render();
+
+        sf::RenderWindow window_;
+        std::unique_ptr<Joueur> joueur_;
+        std::unique_ptr<Formation> formation_; //  ajout ici
     };
 }

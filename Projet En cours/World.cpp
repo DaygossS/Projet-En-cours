@@ -6,9 +6,9 @@ using namespace std;
 namespace game
 {
     World::World()
-        : window_(RenderWindow(VideoMode({ 800, 600 }), "Space Invaders")),
+        : window_(RenderWindow(VideoMode({ 800, 600 }), "Space Invaders - SFML 3.0.2")),
         joueur_(make_unique<Joueur>()),
-        formation_(make_unique<Formation>(10, 4, Vector2f(100.f, 80.f), 60.f, 50.f))
+        formation_(make_unique<Formation>()) //  appel correct ici
     {
         window_.setFramerateLimit(60);
     }
@@ -16,6 +16,7 @@ namespace game
     void World::run()
     {
         Clock clock;
+
         while (window_.isOpen())
         {
             processEvents();
