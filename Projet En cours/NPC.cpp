@@ -10,7 +10,7 @@ using namespace std;
 namespace game
 {
     NPC::NPC(Vector2f position)
-        : Personnage(50.f, 10.f, 100.f),
+        : Personnage(20.f, 10.f, 100.f),
         direction_(1.f),
         cadenceTir_(1.5f),
         fireTimer_(0.f),

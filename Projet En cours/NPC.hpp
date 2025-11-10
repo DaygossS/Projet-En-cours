@@ -17,6 +17,14 @@ namespace game
         void setPosition(const sf::Vector2f& pos) { sprite_.setPosition(pos); }
         void move(const sf::Vector2f& offset) { sprite_.move(offset); }
         void updateControlled(float deltaTime);
+        Arme& getArme() { return arme_; }
+        const Arme& getArme() const { return arme_; }
+
+        float getVie() const { return vie_; }
+        void setVie(float v) { vie_ = v; }
+
+        
+
 
 
     private:

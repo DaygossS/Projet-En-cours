@@ -14,6 +14,11 @@ namespace game
 
         void update(float deltaTime);
         void draw(sf::RenderWindow& window);
+        std::vector<std::unique_ptr<NPC>>& getNPCs() { return npcs_; }
+        
+        const std::vector<std::unique_ptr<NPC>>& getNPCs() const { return npcs_; }
+
+
 
     private:
         float direction_ = 1.f; // 1 = droite, -1 = gauche

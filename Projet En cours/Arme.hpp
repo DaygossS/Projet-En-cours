@@ -29,6 +29,10 @@ namespace game
         // dessine tous les projectiles
         void draw(RenderWindow& window) const;
 
+        std::vector<Projectile>& getProjectiles() { return projectiles_; }
+        
+        const std::vector<Projectile>& getProjectiles() const { return projectiles_; }
+
     private:
         vector<Projectile> projectiles_;
         bool versLeHaut_;   // direction logique des projectiles

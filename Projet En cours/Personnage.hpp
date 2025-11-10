@@ -21,6 +21,11 @@ namespace game
         float getVitesse() const;
         void setVitesse(float vitesse);
 
+        bool isAlive() const { return vie_ > 0; }
+        void setAlive(bool alive) { vie_ = alive ? vie_ : 0.f; }
+        sf::FloatRect getGlobalBounds() const { return sprite_.getGlobalBounds(); }
+
+
     protected:
         float vie_;
         float degats_;

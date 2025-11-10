@@ -13,6 +13,14 @@ namespace game
         Joueur();
         void update(float deltaTime) override;
         void draw(RenderWindow& window) override;
+        Arme& getArme() { return arme_; }
+        const Arme& getArme() const { return arme_; }
+
+        float getDegats() const { return degats_; }
+        float getVie() const { return vie_; }
+        void setVie(float v) { vie_ = v; }
+
+        sf::FloatRect getGlobalBounds() const { return sprite_.getGlobalBounds(); }
 
     private:
 
