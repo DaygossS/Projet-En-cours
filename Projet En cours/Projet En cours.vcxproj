@@ -129,7 +129,9 @@
   <ItemGroup>
     <ClCompile Include="Arme.cpp" />
     <ClCompile Include="armeNPC.cpp" />
+    <ClCompile Include="Boss.cpp" />
     <ClCompile Include="Buff.cpp" />
+    <ClCompile Include="Enemy2.cpp" />
     <ClCompile Include="Formation.cpp" />
     <ClCompile Include="Joueur.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -141,7 +143,9 @@
   <ItemGroup>
     <ClInclude Include="Arme.hpp" />
     <ClInclude Include="armeNPC.hpp" />
+    <ClInclude Include="Boss.hpp" />
     <ClInclude Include="Buff.hpp" />
+    <ClInclude Include="Enemy2.hpp" />
     <ClInclude Include="Formation.hpp" />
     <ClInclude Include="Joueur.hpp" />
     <ClInclude Include="NPC.hpp" />

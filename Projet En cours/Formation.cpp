@@ -1,6 +1,4 @@
-// Formation.cpp
 #include "Formation.hpp"
-#include <memory>
 #include <iostream>
 
 using namespace sf;
@@ -8,75 +6,52 @@ using namespace std;
 
 namespace game
 {
-    // Constructeur par défaut (facultatif)
-    Formation::Formation()
-        : vitesse_(50.f),
-        descente_(20.f),
-        direction_(1.f)
-    {
-        const unsigned int cols = 8;
-        const unsigned int rows = 4;
-        const Vector2f startPos(100.f, 50.f);
-        const float spacingX = 70.f;
-        const float spacingY = 60.f;
-
-        for (unsigned int i = 0; i < rows; ++i)
-        {
-            for (unsigned int j = 0; j < cols; ++j)
-            {
-                float x = startPos.x + j * spacingX;
-                float y = startPos.y + i * spacingY;
-                npcs_.push_back(make_unique<NPC>(Vector2f(x, y)));
-            }
-        }
-
-        cout << "Formation par défaut créée : " << npcs_.size() << " NPCs" << endl;
-    }
-
-    // --- Constructeur PARAMETRÉ requis par ton World::make_unique(...)
     Formation::Formation(unsigned int cols, unsigned int rows, Vector2f startPos, float spacingX, float spacingY)
-        : vitesse_(50.f),
-        descente_(20.f),
-        direction_(1.f)
+        : vitesse_(80.f), direction_(1.f), descente_(25.f)
     {
-        for (unsigned int i = 0; i < rows; ++i)
+        for (unsigned int y = 0; y < rows; ++y)
         {
-            for (unsigned int j = 0; j < cols; ++j)
+            for (unsigned int x = 0; x < cols; ++x)
             {
-                float x = startPos.x + j * spacingX;
-                float y = startPos.y + i * spacingY;
-                npcs_.push_back(make_unique<NPC>(Vector2f(x, y)));
+                Vector2f pos(
+                    startPos.x + x * spacingX,
+                    startPos.y + y * spacingY
+                );
+                npcs_.push_back(make_unique<NPC>(pos));
             }
         }
-
-        cout << "Formation personnalisée : " << cols << "x" << rows << " => " << npcs_.size() << " NPCs" << endl;
     }
 
     void Formation::update(float deltaTime)
     {
         bool changeDir = false;
 
+        // 1. Déplacement horizontal
         for (auto& npc : npcs_)
         {
-            // Deplacement horizontal géré par la formation
-            npc->move(sf::Vector2f(vitesse_ * direction_ * deltaTime, 0.f));
+            npc->move(Vector2f(vitesse_ * direction_ * deltaTime, 0.f));
 
-            // Conserver la logique interne (tir etc.) sans conflit positionnel :
-            npc->updateControlled(deltaTime);
-
+            // Vérification des bords (seulement pour le premier qui les touche)
             float x = npc->getPosition().x;
-            // test simple : si un ennemi dépasse la limite droite/ gauche
-            if (x < 0.f || x > 760.f)
+            float width = npc->getGlobalBounds().size.x;
+            if (x < 0.f || x + width > 800.f)
+            {
                 changeDir = true;
+            }
         }
 
+        // 2. Descente collective si besoin (une seule fois)
         if (changeDir)
         {
             direction_ = -direction_;
             for (auto& npc : npcs_)
-            {
-                npc->move(sf::Vector2f(0.f, descente_));
-            }
+                npc->move(Vector2f(0.f, descente_));
+        }
+
+        // 3. Mise à jour logique des tirs / IA
+        for (auto& npc : npcs_)
+        {
+            npc->updateControlled(deltaTime);
         }
     }
 
