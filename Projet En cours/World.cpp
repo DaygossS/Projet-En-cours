@@ -78,7 +78,7 @@ namespace game
             "Repousser l'envahisseur et ainsi libérer la galaxie.\n"
             "S'il échouait cette mission, c'était la fin de la liberté \n"
             "à travers la galaxie. Tout débuta lorsque ce valeureux résistant\n"
-            "pris sont x-wing et alla combattre les troupes de Dark Vador.....");
+            "pris son x-wing et alla combattre les troupes de Dark Vador.....");
         crawlText_->setCharacterSize(22);
         crawlText_->setFillColor(Color::White);
         {
@@ -288,11 +288,11 @@ namespace game
             if (currentWave_ == 2) showWaveMessage("Attention ! votre combats à attiré une \n flotte ennemi");
             else if (currentWave_ == 3) showWaveMessage("Un des vaisseaux s'est échappé et \n est allé chercher des renforts");
             else if (currentWave_ == 4) showWaveMessage("Les troupes d'élite ont rejoint le combat");
-            else if (currentWave_ == 5) showWaveMessage("Le seigneur Vador en personne s'est déplacé \n courage, Vous avez presque réussi votre mission \n que la force soit avec vous !");
+            else if (currentWave_ == 5) showWaveMessage("Le seigneur Vador en personne s'est \n déplacé courage, Vous avez presque réussi \n votre mission que la force soit  \n avec vous !");
             else if (currentWave_ > 5)
             {
                 gameOver_ = true;
-                gameOverText_->setString("VICTOIRE ! \n Vous l'avez fait !!! La galaxie est fière de vous ! \n\nAppuyez sur R pour rejouer");
+                gameOverText_->setString("VICTOIRE ! \n Vous l'avez fait !!! La galaxie est \n fière de vous ! \n\nAppuyez sur R pour rejouer");
             }
 
             if (!gameOver_)
