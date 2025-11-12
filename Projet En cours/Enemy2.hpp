@@ -7,5 +7,7 @@ namespace game
     {
     public:
         Enemy2(sf::Vector2f position);
+        void update(float deltaTime) override;
+        void draw(sf::RenderWindow& window) override;
     };
 }

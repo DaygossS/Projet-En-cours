@@ -43,29 +43,29 @@ namespace game
 
         sprite_.move(movement);
 
-       // --- Tir automatique double-canon ---
-static sf::Clock tirClock; // contrôle la cadence
-static bool leftSide = true; // alterne les côtés du vaisseau
+        // --- Tir automatique double-canon ---
+        static sf::Clock tirClock; // contrôle la cadence
+        static bool leftSide = true; // alterne les côtés du vaisseau
 
-if (tirClock.getElapsedTime().asSeconds() > 0.25f) // cadence de tir (ajuste selon ton goût)
-{
-    auto rect = sprite_.getTextureRect();
-    sf::Vector2f spriteSize(
-        rect.size.x * sprite_.getScale().x,
-        rect.size.y * sprite_.getScale().y
-    );
+        if (tirClock.getElapsedTime().asSeconds() > 0.005f) // cadence de tir (ajuste selon ton goût)
+        {
+            auto rect = sprite_.getTextureRect();
+            sf::Vector2f spriteSize(
+                rect.size.x * sprite_.getScale().x,
+                rect.size.y * sprite_.getScale().y
+            );
 
-    // Position du tir : gauche ou droite du vaisseau
-    sf::Vector2f spawnPos(
-        sprite_.getPosition().x + (leftSide ? 8.f : spriteSize.x - 12.f),
-        sprite_.getPosition().y - 8.f
-    );
+            // Position du tir : gauche ou droite du vaisseau
+            sf::Vector2f spawnPos(
+                sprite_.getPosition().x + (leftSide ? 8.f : spriteSize.x - 12.f),
+                sprite_.getPosition().y - 8.f
+            );
 
-    arme_.tirer(spawnPos);
+            arme_.tirer(spawnPos);
 
-    leftSide = !leftSide;      // alterne pour le tir suivant
-    tirClock.restart();        // remet le compteur à zéro
-}
+            leftSide = !leftSide;      // alterne pour le tir suivant
+            tirClock.restart();        // remet le compteur à zéro
+        }
 
 
     }

@@ -16,9 +16,11 @@ namespace game
         {
             throw std::runtime_error("Impossible de charger assets/boss.png");
         }
-
+        
         sprite_.setTexture(texture_);
-        sprite_.setScale(Vector2f(1.0f, 1.0f));
+        Vector2u texSize = texture_.getSize();
+        sprite_.setOrigin(Vector2f(texSize.x / 2.f, texSize.y / 2.f));
+        sprite_.setScale(Vector2f(0.1f, 0.1f));
         sprite_.setPosition(position);
     }
 }

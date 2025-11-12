@@ -2,49 +2,45 @@
 #include <algorithm>
 
 using namespace sf;
-using namespace std;
+using namespace game;
 
-namespace game
+Arme::Arme(bool versLeHaut, float vitesse)
+    : versLeHaut_(versLeHaut),
+    vitesseProjectile_(vitesse)
 {
-    Arme::Arme(bool versLeHaut)
-        : versLeHaut_(versLeHaut)
-    {
-        // vitesseProjectile_ déjà initialisée dans l'en-tête
-    }
+}
 
-    void Arme::tirer(const Vector2f& position)
-    {
-        Projectile p;
-        p.shape.setSize(Vector2f(3.f, 14.f));
-        p.shape.setFillColor(versLeHaut_ ? Color::Red : Color::Green);
-        p.shape.setPosition(position);
-        p.vitesse = versLeHaut_ ? -vitesseProjectile_ : vitesseProjectile_;
-        projectiles_.push_back(std::move(p));
-    }
+void Arme::tirer(const Vector2f& position, float scale)
+{
+    RectangleShape laser;
+    laser.setSize(Vector2f(3.f * scale, 18.f * scale));
+    laser.setFillColor(versLeHaut_ ? Color::Red : Color(0, 255, 64));
+    laser.setOutlineThickness(0.3f);
+    laser.setOutlineColor(Color::Red);
+    laser.setPosition(position);
 
-    void Arme::update(float deltaTime)
-    {
-        // déplacer
-        for (auto& p : projectiles_)
-        {
-            p.shape.move(Vector2f(0.f, p.vitesse * deltaTime));
-        }
+    projectiles_.push_back(laser);
+}
 
-        // nettoyage des projectiles hors écran (hauteur fenêtre 600)
-        projectiles_.erase(
-            std::remove_if(projectiles_.begin(), projectiles_.end(),
-                [](const Projectile& pr)
-                {
-                    float y = pr.shape.getPosition().y;
-                    return (y < -50.f || y > 650.f);
-                }),
-            projectiles_.end()
-        );
-    }
+void Arme::update(float deltaTime)
+{
+    const float direction = versLeHaut_ ? -1.f : 1.f;
 
-    void Arme::draw(RenderWindow& window) const
-    {
-        for (const auto& p : projectiles_)
-            window.draw(p.shape);
-    }
+    for (auto& projectile : projectiles_)
+        projectile.move(sf::Vector2f(0.f, vitesseProjectile_ * deltaTime * direction));
+
+    projectiles_.erase(
+        std::remove_if(projectiles_.begin(), projectiles_.end(),
+            [direction](const RectangleShape& p)
+            {
+                const float y = p.getPosition().y;
+                return (direction < 0.f && y < -20.f) || (direction > 0.f && y > 600.f);
+            }),
+        projectiles_.end());
+}
+
+void Arme::draw(RenderWindow& window)
+{
+    for (auto& projectile : projectiles_)
+        window.draw(projectile);
 }

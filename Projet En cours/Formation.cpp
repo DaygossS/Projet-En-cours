@@ -1,4 +1,6 @@
 #include "Formation.hpp"
+#include "Enemy2.hpp"
+#include "Boss.hpp"
 #include <iostream>
 
 using namespace sf;
@@ -7,7 +9,7 @@ using namespace std;
 namespace game
 {
     Formation::Formation(unsigned int cols, unsigned int rows, Vector2f startPos, float spacingX, float spacingY)
-        : vitesse_(80.f), direction_(1.f), descente_(25.f)
+        : vitesse_(40.f), direction_(1.f), descente_(25.f)
     {
         for (unsigned int y = 0; y < rows; ++y)
         {
@@ -25,34 +27,77 @@ namespace game
     void Formation::update(float deltaTime)
     {
         bool changeDir = false;
+        static bool descenteEffectuee = false;
+        const float windowWidth = 800.f;
 
-        // 1. Déplacement horizontal
+        // --- Mouvement horizontal ---
         for (auto& npc : npcs_)
         {
-            npc->move(Vector2f(vitesse_ * direction_ * deltaTime, 0.f));
+            npc->move(Vector2f(vitesse_ * direction_ * speedMultiplier_ * deltaTime, 0.f));
 
-            // Vérification des bords (seulement pour le premier qui les touche)
-            float x = npc->getPosition().x;
-            float width = npc->getGlobalBounds().size.x;
-            if (x < 0.f || x + width > 800.f)
+            auto bounds = npc->getGlobalBounds();
+            float left = bounds.position.x;
+            float right = bounds.position.x + bounds.size.x;
+
+            // marges personnalisées selon le type
+            float margeGauche = 0.f;
+            float margeDroite = 0.f;
+
+            if (dynamic_cast<Enemy2*>(npc.get()))
+            {
+                margeGauche = 55.f;  // plus de marge à gauche
+                margeDroite = 0.f;  // légère marge à droite
+            }
+            else if (dynamic_cast<Boss*>(npc.get()))
+            {
+                margeGauche = 80.f;
+                margeDroite = 30.f;
+            }
+            else // NPC standard
+            {
+                margeGauche = 0.f;
+                margeDroite = 0.f;
+            }
+
+            // détection des bords
+            if ((direction_ < 0.f && left <= 0.f - margeGauche) ||
+                (direction_ > 0.f && right >= windowWidth + margeDroite))
             {
                 changeDir = true;
             }
         }
 
-        // 2. Descente collective si besoin (une seule fois)
-        if (changeDir)
+        // --- Descente lors du changement de direction ---
+        if (changeDir && !descenteEffectuee)
         {
             direction_ = -direction_;
             for (auto& npc : npcs_)
                 npc->move(Vector2f(0.f, descente_));
+            descenteEffectuee = true;
+        }
+        else if (!changeDir)
+        {
+            descenteEffectuee = false; // on réarme la descente quand la direction est stable
         }
 
-        // 3. Mise à jour logique des tirs / IA
-        for (auto& npc : npcs_)
+        // --- Timer de début de vague ---
+        if (!vagueActive_)
         {
-            npc->updateControlled(deltaTime);
+            debutVagueTimer_ += deltaTime;
+            if (debutVagueTimer_ < 6.f) // délai avant activation des tirs
+                return;
+            vagueActive_ = true;
         }
+
+        // --- Mise à jour IA et tirs ---
+        for (auto& npc : npcs_)
+            npc->updateControlled(deltaTime);
+    }
+
+    void Formation::resetVagueTimer()
+    {
+        debutVagueTimer_ = 0.f;
+        vagueActive_ = false;
     }
 
     void Formation::draw(RenderWindow& window)

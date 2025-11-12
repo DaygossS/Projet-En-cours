@@ -2,40 +2,23 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-using namespace sf;
-using namespace std;
-
 namespace game
 {
     class Arme
     {
     public:
-        struct Projectile
-        {
-            RectangleShape shape;
-            float vitesse = 0.f;
-        };
+        Arme(bool versLeHaut = true, float vitesse = 600.f);
 
-        // versLeHaut = true -> joueur (rouge, monte)
-        // versLeHaut = false -> NPC (vert, descend)
-        explicit Arme(bool versLeHaut = true);
+        virtual void tirer(const sf::Vector2f& position, float scale = 1.0f);
+        virtual void update(float deltaTime);
+        virtual void draw(sf::RenderWindow& window);
 
-        // crée un projectile à la position donnée
-        void tirer(const Vector2f& position);
+        std::vector<sf::RectangleShape>& getProjectiles() { return projectiles_; }
+        const std::vector<sf::RectangleShape>& getProjectiles() const { return projectiles_; }
 
-        // met à jour tous les projectiles
-        void update(float deltaTime);
-
-        // dessine tous les projectiles
-        void draw(RenderWindow& window) const;
-
-        std::vector<Projectile>& getProjectiles() { return projectiles_; }
-        
-        const std::vector<Projectile>& getProjectiles() const { return projectiles_; }
-
-    private:
-        vector<Projectile> projectiles_;
-        bool versLeHaut_;   // direction logique des projectiles
-        float vitesseProjectile_ = 400.f;
+    protected:
+        std::vector<sf::RectangleShape> projectiles_;
+        float vitesseProjectile_;
+        bool versLeHaut_;
     };
 }
