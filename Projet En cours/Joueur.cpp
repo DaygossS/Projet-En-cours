@@ -8,7 +8,7 @@ using namespace std;
 namespace game
 {
     Joueur::Joueur()
-        : Personnage(100.f, 10.f, 150.f)
+        : Personnage(100.f, 10.f, 1000.f)
     {
         if (!texture_.loadFromFile("assets/player.png"))
         {

@@ -104,11 +104,9 @@ namespace game
             float deltaTime = clock.restart().asSeconds();
             window_.clear(Color::Black);
 
-            // Titre qui monte lentement
             if (titleText_->getPosition().y > 150.f)
                 titleText_->move({ 0.f, -20.f * deltaTime });
 
-            // Fondu du titre
             if (titleText_->getPosition().y < 200.f)
             {
                 Color c = titleText_->getFillColor();
@@ -117,12 +115,10 @@ namespace game
                 titleText_->setFillColor(c);
             }
 
-            // Défilement du texte façon Star Wars
             crawlText_->move({ 0.f, -40.f * deltaTime });
             float y = crawlText_->getPosition().y;
             float scale = max(0.4f, 1.0f - (700.f - y) / 1200.f);
             crawlText_->setScale({ scale, scale });
-            
 
             window_.draw(*titleText_);
             window_.draw(*crawlText_);
@@ -148,6 +144,64 @@ namespace game
         }
     }
 
+    // ------------------ NOUVEAU : Texte entre les vagues ------------------
+    void World::showWaveMessage(const std::string& message)
+    {
+        Text msg(font_);
+        msg.setString(message);
+        msg.setCharacterSize(36);
+        msg.setFillColor(Color::Yellow);
+        msg.setStyle(Text::Bold);
+
+        auto centerText = [&](Text& t)
+            {
+                FloatRect bounds = t.getLocalBounds();
+                t.setOrigin({ bounds.size.x / 2.f, bounds.size.y / 2.f });
+                t.setPosition({ window_.getView().getCenter().x, window_.getView().getCenter().y });
+            };
+
+        centerText(msg);
+
+        const float fadeIn = 0.7f;
+        const float visible = 1.5f;
+        const float fadeOut = 0.7f;
+
+        Clock timer;
+        while (window_.isOpen())
+        {
+            float t = timer.getElapsedTime().asSeconds();
+            if (t > fadeIn + visible + fadeOut)
+                break;
+
+            while (auto eventOpt = window_.pollEvent())
+            {
+                const Event& ev = *eventOpt;
+                if (ev.is<Event::Closed>())
+                {
+                    window_.close();
+                    return;
+                }
+            }
+
+            float alpha = 255.f;
+            if (t < fadeIn)
+                alpha = (t / fadeIn) * 255.f;
+            else if (t > fadeIn + visible)
+                alpha = 255.f - ((t - fadeIn - visible) / fadeOut) * 255.f;
+
+            Color c = msg.getFillColor();
+            c.a = static_cast<unsigned char>(std::clamp(alpha, 0.f, 255.f));
+            msg.setFillColor(c);
+
+            centerText(msg);
+
+            window_.clear(Color::Black);
+            window_.draw(msg);
+            window_.display();
+        }
+    }
+    // ---------------------------------------------------------------------
+
     void World::run()
     {
         showIntro();
@@ -160,6 +214,8 @@ namespace game
             render();
         }
     }
+
+    
 
     void World::processEvents()
     {
@@ -183,16 +239,19 @@ namespace game
         if (formation_)
             formation_->update(deltaTime);
 
+        // Ajustement de vitesse selon la vague
         if (currentWave_ == 1) speedMultiplier_ = 1.f;
-        else if (currentWave_ == 2) speedMultiplier_ = 1.25f;
-        else if (currentWave_ == 3) speedMultiplier_ = 1.5f;
-        else if (currentWave_ == 4) speedMultiplier_ = 1.2f;
+        else if (currentWave_ == 2) speedMultiplier_ = 1.1f;
+        else if (currentWave_ == 3) speedMultiplier_ = 1.2f;
+        else if (currentWave_ == 4) speedMultiplier_ = 1.1f;
         else speedMultiplier_ = 0.9f;
 
-        if (formation_) formation_->setSpeedMultiplier(speedMultiplier_);
+        if (formation_)
+            formation_->setSpeedMultiplier(speedMultiplier_);
 
         handleCollisions();
 
+        // Si un ennemi touche le bas de l’écran → Game Over
         if (formation_)
         {
             auto& npcs = formation_->getNPCs();
@@ -207,6 +266,7 @@ namespace game
             }
         }
 
+        // Mise à jour de la vie du joueur
         int vie = static_cast<int>(joueur_->getVie());
         vieText_->setString("Vie : " + to_string(vie));
         float ratio = vie / 100.f;
@@ -216,15 +276,22 @@ namespace game
         if (joueur_->getVie() <= 0.f)
             gameOver_ = true;
 
+        // --- Transition de vague ---
         if (formation_ && formation_->getNPCs().empty() && !gameOver_)
         {
             currentWave_++;
-            if (currentWave_ > 5)
+
+            if (currentWave_ == 2) showWaveMessage("Les renforts arrivent !");
+            else if (currentWave_ == 3) showWaveMessage("Attention ! Nouveaux ennemis détectés !");
+            else if (currentWave_ == 4) showWaveMessage("La bataille s'intensifie...");
+            else if (currentWave_ == 5) showWaveMessage("Le BOSS approche !");
+            else if (currentWave_ > 5)
             {
                 gameOver_ = true;
                 gameOverText_->setString("VICTOIRE !\n\nAppuyez sur R pour rejouer");
             }
-            else
+
+            if (!gameOver_)
                 loadWave(currentWave_);
 
             waveText_->setString("Vague : " + to_string(currentWave_));
@@ -242,13 +309,41 @@ namespace game
             break;
         case 2:
             formation_ = make_unique<Formation>(9, 4, Vector2f(80.f, 50.f), 70.f, 60.f);
-            formation_->getNPCs().push_back(make_unique<Enemy2>(Vector2f(400.f, 100.f)));
+            formation_->getNPCs().push_back(make_unique<Enemy2>(Vector2f(400.f, 50.f)));
             break;
         case 3:
-            formation_ = make_unique<Formation>(8, 3, Vector2f(100.f, 60.f), 80.f, 55.f);
-            for (int i = 0; i < 3; ++i)
-                formation_->getNPCs().push_back(make_unique<Enemy2>(Vector2f(150.f + i * 200.f, 140.f)));
+        {
+            // --- Création de la formation principale ---
+            formation_ = make_unique<Formation>(8, 3, Vector2f(100.f, 80.f), 80.f, 55.f);
+
+            // --- Calcule les bornes horizontales de la formation ---
+            auto& npcs = formation_->getNPCs();
+            float minX = FLT_MAX, maxX = -FLT_MAX;
+
+            for (auto& npc : npcs)
+            {
+                FloatRect bounds = npc->getGlobalBounds();
+                minX = std::min(minX, bounds.position.x);
+                maxX = std::max(maxX, bounds.position.x + bounds.size.x);
+            }
+
+            float formationCenterX = (minX + maxX) / 2.f;
+
+            // --- Ajoute 3 Enemy2 centrés par rapport à la formation ---
+            const int enemyCount = 3;
+            const float spacing = 200.f;
+            float totalWidth = (enemyCount - 1) * spacing;
+            float startX = formationCenterX - totalWidth / 2.2f;
+            float yPos = 40.f; // hauteur ajustée au-dessus des NPC
+
+            for (int i = 0; i < enemyCount; ++i)
+                npcs.push_back(make_unique<Enemy2>(Vector2f(startX + i * spacing, yPos)));
+
             break;
+        }
+
+
+
         case 4:
             formation_ = make_unique<Formation>(8, 1, Vector2f(100.f, 80.f), 80.f, 55.f);
             formation_->getNPCs().clear();
@@ -256,11 +351,48 @@ namespace game
                 formation_->getNPCs().push_back(make_unique<Enemy2>(Vector2f(100.f + i * 80.f, 100.f)));
             break;
         case 5:
-            formation_ = make_unique<Formation>(0, 0, Vector2f(0.f, 0.f), 0.f, 0.f);
-            formation_->getNPCs().push_back(make_unique<Boss>(Vector2f(400.f, 80.f)));
-            for (int i = 0; i < 4; ++i)
-                formation_->getNPCs().push_back(make_unique<Enemy2>(Vector2f(280.f + i * 80.f, 200.f)));
+        {
+            // --- Création de la formation principale (Enemy2) ---
+            // 4 colonnes, 1 ligne, espacés horizontalement
+            const int cols = 4;
+            const int rows = 1;
+            const float spacingX = 200.f;
+            const float spacingY = 55.f;
+
+            // position de départ : légèrement plus bas qu’avant
+            formation_ = make_unique<Formation>(cols, rows, sf::Vector2f(100.f, 180.f), spacingX, spacingY);
+            auto& npcs = formation_->getNPCs();
+
+            // --- Calcule les bornes horizontales pour centrer le boss ---
+            float minX = std::numeric_limits<float>::infinity();
+            float maxX = -std::numeric_limits<float>::infinity();
+            float minY = std::numeric_limits<float>::infinity();
+
+            for (auto& npc : npcs)
+            {
+                sf::FloatRect b = npc->getGlobalBounds();
+                minX = std::min(minX, b.position.x);
+                maxX = std::max(maxX, b.position.x + b.size.x);
+                minY = std::min(minY, b.position.y);
+            }
+
+            float formationCenterX = (minX + maxX) * 0.5f;
+
+            // --- Placement du boss ---
+            const float bossVerticalOffset = 140.f; // hauteur ajustée : plus bas que ta version précédente
+            float bossY = minY - bossVerticalOffset;
+
+            npcs.push_back(std::make_unique<Enemy2>(sf::Vector2f(minX, minY)));
+            npcs.push_back(std::make_unique<Enemy2>(sf::Vector2f(minX + spacingX, minY)));
+            npcs.push_back(std::make_unique<Enemy2>(sf::Vector2f(minX + 2 * spacingX, minY)));
+            npcs.push_back(std::make_unique<Enemy2>(sf::Vector2f(minX + 3 * spacingX, minY)));
+
+            // boss centré sur la formation
+            npcs.push_back(std::make_unique<Boss>(sf::Vector2f(formationCenterX, bossY)));
+
             break;
+        }
+
         default:
             formation_ = make_unique<Formation>(8, 3, Vector2f(100.f, 50.f), 80.f, 60.f);
             break;
@@ -275,8 +407,12 @@ namespace game
         gameOver_ = false;
         introActive_ = true;
         gameStarted_ = false;
-        if (waveText_) waveText_->setString("Vague : 1");
-        if (vieText_) vieText_->setString("Vie : 100");
+
+        if (waveText_)
+            waveText_->setString("Vague : 1");
+        if (vieText_)
+            vieText_->setString("Vie : 100");
+
         showIntro();
     }
 
@@ -284,7 +420,8 @@ namespace game
     {
         window_.clear(Color::Black);
 
-        if (formation_) formation_->draw(window_);
+        if (formation_)
+            formation_->draw(window_);
         joueur_->draw(window_);
 
         window_.draw(vieBarBackground_);
@@ -292,7 +429,8 @@ namespace game
         window_.draw(*vieText_);
         window_.draw(*waveText_);
 
-        if (gameOver_) window_.draw(*gameOverText_);
+        if (gameOver_)
+            window_.draw(*gameOverText_);
 
         window_.display();
     }
@@ -361,3 +499,4 @@ namespace game
             aMin.y < bMax.y && aMax.y > bMin.y);
     }
 }
+
