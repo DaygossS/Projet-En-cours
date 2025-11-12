@@ -78,7 +78,7 @@ namespace game
             "Repousser l'envahisseur et ainsi libérer la galaxie.\n"
             "S'il échouait cette mission, c'était la fin de la liberté \n"
             "à travers la galaxie. Tout débuta lorsque ce valeureux résistant\n"
-            "pris sont x-wing et alla combattre les troupe de Dark Vador.....");
+            "pris sont x-wing et alla combattre les troupes de Dark Vador.....");
         crawlText_->setCharacterSize(22);
         crawlText_->setFillColor(Color::White);
         {
