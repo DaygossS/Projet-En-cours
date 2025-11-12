@@ -84,7 +84,7 @@ namespace game
         if (!vagueActive_)
         {
             debutVagueTimer_ += deltaTime;
-            if (debutVagueTimer_ < 6.f) // délai avant activation des tirs
+            if (debutVagueTimer_ < 1.f) // délai avant activation des tirs
                 return;
             vagueActive_ = true;
         }

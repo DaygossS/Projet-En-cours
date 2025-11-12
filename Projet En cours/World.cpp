@@ -70,11 +70,15 @@ namespace game
         // --- Intro - Crawl ---
         crawlText_ = make_unique<Text>(font_);
         crawlText_->setString(
-            "Il y a bien longtemps, dans une galaxie lointaine...\n\n"
-            "Les envahisseurs stellaires ont declare la guerre.\n"
-            "Un seul pilote se dresse contre eux : VOUS !\n\n"
-            "Defendez la Terre des vagues ennemies,\n"
-            "et triomphez du redoutable BOSS final !");
+            "Il y a bien longtemps, dans une galaxie lointaine, très loingtaine...\n\n"
+            "Un joueur avait été recruté spécialement par le résistance,\n"
+            "Dans le but d'arrêter l'expension incéssante de l'Empire.\n"
+            "La mission qui lui avait été confiée :\n\n"
+            "A bord de son vaisseau x-wing, il devait\n"
+            "Repousser l'envahisseur et ainsi libérer la galaxie.\n"
+            "S'il échouait cette mission, c'était la fin de la liberté \n"
+            "à travers la galaxie. Tout débuta lorsque ce valeureux résistant\n"
+            "pris sont x-wing et alla combattre les troupe de Dark Vador.....");
         crawlText_->setCharacterSize(22);
         crawlText_->setFillColor(Color::White);
         {
@@ -281,14 +285,14 @@ namespace game
         {
             currentWave_++;
 
-            if (currentWave_ == 2) showWaveMessage("Les renforts arrivent !");
-            else if (currentWave_ == 3) showWaveMessage("Attention ! Nouveaux ennemis détectés !");
-            else if (currentWave_ == 4) showWaveMessage("La bataille s'intensifie...");
-            else if (currentWave_ == 5) showWaveMessage("Le BOSS approche !");
+            if (currentWave_ == 2) showWaveMessage("Attention ! votre combats à attiré une \n flotte ennemi");
+            else if (currentWave_ == 3) showWaveMessage("Un des vaisseaux s'est échappé et \n est allé chercher des renforts");
+            else if (currentWave_ == 4) showWaveMessage("Les troupes d'élite ont rejoint le combat");
+            else if (currentWave_ == 5) showWaveMessage("Le seigneur Vador en personne s'est déplacé \n courage, Vous avez presque réussi votre mission \n que la force soit avec vous !");
             else if (currentWave_ > 5)
             {
                 gameOver_ = true;
-                gameOverText_->setString("VICTOIRE !\n\nAppuyez sur R pour rejouer");
+                gameOverText_->setString("VICTOIRE ! \n Vous l'avez fait !!! La galaxie est fière de vous ! \n\nAppuyez sur R pour rejouer");
             }
 
             if (!gameOver_)
@@ -308,13 +312,13 @@ namespace game
             formation_ = make_unique<Formation>(8, 3, Vector2f(100.f, 50.f), 80.f, 60.f);
             break;
         case 2:
-            formation_ = make_unique<Formation>(9, 4, Vector2f(80.f, 50.f), 70.f, 60.f);
+            formation_ = make_unique<Formation>(7, 2, Vector2f(80.f, 50.f), 70.f, 60.f);
             formation_->getNPCs().push_back(make_unique<Enemy2>(Vector2f(400.f, 50.f)));
             break;
         case 3:
         {
             // --- Création de la formation principale ---
-            formation_ = make_unique<Formation>(8, 3, Vector2f(100.f, 80.f), 80.f, 55.f);
+            formation_ = make_unique<Formation>(6, 2, Vector2f(100.f, 80.f), 80.f, 55.f);
 
             // --- Calcule les bornes horizontales de la formation ---
             auto& npcs = formation_->getNPCs();

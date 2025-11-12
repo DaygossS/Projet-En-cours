@@ -75,7 +75,7 @@ namespace game
 
         if (fireTimer_ >= 0.3f)
         {
-            const int chancePercent = 4;
+            const int chancePercent = 8;
             if ((std::rand() % 100) < chancePercent)
             {
                 auto pos = sprite_.getPosition();

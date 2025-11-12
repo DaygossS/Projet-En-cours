@@ -8,7 +8,7 @@ using namespace std;
 namespace game
 {
     Joueur::Joueur()
-        : Personnage(100.f, 10.f, 1000.f)
+        : Personnage(100.f, 10.f, 200.f)
     {
         if (!texture_.loadFromFile("assets/player.png"))
         {
@@ -47,7 +47,7 @@ namespace game
         static sf::Clock tirClock; // contrôle la cadence
         static bool leftSide = true; // alterne les côtés du vaisseau
 
-        if (tirClock.getElapsedTime().asSeconds() > 0.005f) // cadence de tir (ajuste selon ton goût)
+        if (tirClock.getElapsedTime().asSeconds() > 0.2f) // cadence de tir (ajuste selon ton goût)
         {
             auto rect = sprite_.getTextureRect();
             sf::Vector2f spriteSize(
